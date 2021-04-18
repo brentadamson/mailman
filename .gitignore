@@ -1,0 +1,11 @@
+vendor
+node_modules
+.env
+.clasp*
+creds.json
+*.pem
+certs/
+dist/
+
+# mac
+.DS_Store
