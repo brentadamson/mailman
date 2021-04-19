@@ -82,7 +82,7 @@ export default function Mailman(props) {
       setData(data);
       setSelectedSenderIdx(0);
     }).catch(function(err){
-      setAlertMessage(err);
+      setAlertMessage('Unable to get Sheet. Please try again.');
       setAlertOpen(true);
     }).then(serverFunctions.getTemplates().then(function(rsp){
       if(rsp.error){
@@ -93,7 +93,7 @@ export default function Mailman(props) {
       }
       setLoading(false);
     })).catch(function(err){
-      setAlertMessage(err);
+      setAlertMessage('Unable to get your saved templates. Please try again.');
       setAlertOpen(true);
       setLoading(false);
     });
@@ -160,7 +160,7 @@ export default function Mailman(props) {
       setEditing(false);
       setLoading(false);
     }).catch(function(err){
-      setAlertMessage(err);
+      setAlertMessage('Unable to save your templates. Please try again.');
       setAlertOpen(true);
       setLoading(false);
     });
@@ -185,7 +185,7 @@ export default function Mailman(props) {
       setSentCount(rsp);
       setLoading(false);
     }).catch(function(err){
-      setAlertMessage(err);
+      setAlertMessage('Unable to send emails. Please try again.');
       setAlertOpen(true);
       setSentCount(0);
       setLoading(false);
