@@ -88,8 +88,8 @@ export default function Mailman(props) {
       if(rsp.error){
         setAlertMessage(rsp.error);
         setAlertOpen(true);
-      } else if (rsp.response && rsp.response.templates){
-        setTemplates(rsp.response.templates);
+      } else if (rsp.response){
+        setTemplates(rsp.response);
       }
       setLoading(false);
     })).catch(function(err){
@@ -154,8 +154,8 @@ export default function Mailman(props) {
       if(rsp.error){
         setAlertMessage(rsp.error);
         setAlertOpen(true);
-      } else if (rsp.response && rsp.response.templates){
-        setTemplates(rsp.response.templates);        
+      } else if (rsp.response){
+        setTemplates(rsp.response);
       }
       setEditing(false);
       setLoading(false);
