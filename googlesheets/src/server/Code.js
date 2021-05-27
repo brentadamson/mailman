@@ -1,3 +1,5 @@
+const templatesKey = 'templates';
+
 export const onInstall = () => {
   onOpen();
 }
@@ -16,7 +18,13 @@ export const startMerge = () => {
 
 // getTemplates gets a user's saved templates
 export const getTemplates = () => {
-  // We don't necessarily need to encrypt the jwt since it will be going over HTTPS but could be good to do anyway.
+  const userProperties = PropertiesService.getUserProperties();
+  var templates = userProperties.getProperty(templatesKey);
+  if (templates){
+    return {'response': JSON.parse(templates)}
+  }
+
+  // TODO: remove this after all users have had a chance to save their templates in the script
   const scriptProperties = PropertiesService.getScriptProperties();
   const jwt = createJwt({
     privateKey: scriptProperties.getProperty('JWT_SECRET'),
@@ -38,25 +46,9 @@ export const getTemplates = () => {
 
 // saveTemplates saves a user's email templates
 export const saveTemplates = (templates) => {
-  // We don't necessarily need to encrypt the jwt since it will be going over HTTPS but could be good to do anyway.
-  const scriptProperties = PropertiesService.getScriptProperties();
-  const jwt = createJwt({
-    privateKey: scriptProperties.getProperty('JWT_SECRET'),
-    input: {'email':Session.getActiveUser().getEmail()},
-  });
- 
-  var options = {
-    'validateHttpsCertificates': false,
-    'method': 'POST',
-    'followRedirects': true,
-    'muteHttpExceptions': true,
-    'headers' : {
-      'Authorization': 'Bearer '+jwt,
-    },
-    'payload': JSON.stringify({"templates": templates}),
-  };
-  var response = UrlFetchApp.fetch(scriptProperties.getProperty('DOMAIN')+'/save', options).getContentText();
-  return JSON.parse(response); 
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty(templatesKey, JSON.stringify(templates));
+  return {'response': templates};
 }
 
 // email validation that accepts unicode characters
