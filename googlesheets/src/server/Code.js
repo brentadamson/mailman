@@ -15,7 +15,10 @@ export const startMerge = () => {
   const userProperties = PropertiesService.getUserProperties();
   var email = Session.getActiveUser().getEmail();
   userProperties.setProperty(emailKey, email);
-  registerUser(email);
+  var rsp = registerUser(email);
+  if (rsp && 'error' in rsp){
+    Logger.log('registerUser() error: '+rsp.error);
+  }
 
   var title = 'Mailman';
   var html = HtmlService.createTemplateFromFile('modal');
