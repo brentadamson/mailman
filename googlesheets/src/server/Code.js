@@ -1,3 +1,6 @@
+const key = 'KEY';
+const domainKey = 'DOMAIN';
+const emailKey = 'email';
 const templatesKey = 'templates';
 
 export const onInstall = () => {
@@ -9,12 +12,36 @@ export const onOpen = () => {
 };
 
 export const startMerge = () => {
+  const userProperties = PropertiesService.getUserProperties();
+  var email = Session.getActiveUser().getEmail();
+  userProperties.setProperty(emailKey, email);
+  registerUser(email);
+
   var title = 'Mailman';
   var html = HtmlService.createTemplateFromFile('modal');
   var htmlOutput = html.evaluate();
   htmlOutput.setTitle(title).setWidth(730).setHeight(500);
   SpreadsheetApp.getUi().showModalDialog(htmlOutput, title);
 };
+
+// registerUser registers a user
+export const registerUser = (email) => {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  var options = {
+    'validateHttpsCertificates': false,
+    'method': 'POST',
+    'followRedirects': true,
+    'muteHttpExceptions': true,
+    'contentType': 'application/json',
+    'payload': {
+      'email': email,
+      'key': scriptProperties.getProperty(key),
+    },
+  };
+  options.payload = JSON.stringify(options.payload);
+  var response = UrlFetchApp.fetch(scriptProperties.getProperty(domainKey)+'/user/register', options).getContentText();
+  return JSON.parse(response); 
+}
 
 // getTemplates gets a user's saved templates
 export const getTemplates = () => {
@@ -23,25 +50,6 @@ export const getTemplates = () => {
   if (templates){
     return {'response': JSON.parse(templates)}
   }
-
-  // TODO: remove this after all users have had a chance to save their templates in the script
-  const scriptProperties = PropertiesService.getScriptProperties();
-  const jwt = createJwt({
-    privateKey: scriptProperties.getProperty('JWT_SECRET'),
-    input: {'email':Session.getActiveUser().getEmail()},
-  });
- 
-   var options = {
-    'validateHttpsCertificates': false,
-    'method': 'POST',
-    'followRedirects': true,
-    'muteHttpExceptions': true,
-    'headers' : {
-      'Authorization': 'Bearer '+jwt,
-    },
-  };
-  var response = UrlFetchApp.fetch(scriptProperties.getProperty('DOMAIN')+'/get', options).getContentText();
-  return JSON.parse(response); 
 }
 
 // saveTemplates saves a user's email templates
@@ -164,46 +172,6 @@ export const closeModal = () => {
   var output = HtmlService.createHtmlOutput('<script>google.script.host.close();</script>');
   SpreadsheetApp.getUi().showModalDialog(output, 'Loading...');
 }
-
-// https://vanchiv.com/create-json-web-token-using-google-apps-script/
-const createJwt = ({ privateKey, input = {} }) => {
-  // Sign token using HMAC with SHA-256 algorithm
-  const header = {
-    alg: 'HS256',
-    typ: 'JWT',
-  };
-
-  const now = Date.now();
-  const expires = new Date(now);
-
-  // we don't need it to last for hours
-  // expires.setHours(expires.getHours() + expiresInHours);
-  expires.setMinutes(expires.getMinutes() + 1);
-
-  // iat = issued time, exp = expiration time
-  const payload = {
-    exp: Math.round(expires.getTime() / 1000),
-    iat: Math.round(now / 1000),
-  };
-
-  // add user payload
-  Object.keys(input).forEach(function (key) {
-    payload[key] = input[key];
-  });
-
-  const base64Encode = (text, json = true) => {
-    const input = json ? JSON.stringify(text) : text;
-    return Utilities.base64EncodeWebSafe(input).replace(/=+$/, '');
-  };
-
-  const toSign = `${base64Encode(header)}.${base64Encode(payload)}`;
-  const signatureBytes = Utilities.computeHmacSha256Signature(
-    toSign,
-    privateKey
-  );
-  const signature = base64Encode(signatureBytes, false);
-  return `${toSign}.${signature}`;
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //

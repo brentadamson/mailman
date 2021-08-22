@@ -21,7 +21,7 @@ The easiest way to run Mailman is to install it from the Google Workspace Market
 
 * Set your environment variables:
 
-  **IMPORTANT**: The `JWT_SECRET` **MUST** be the same as the `JWT_SECRET` environment variable set below in the `Google Sheets` section.
+  **IMPORTANT**: The `KEY` **MUST** be the same as the `KEY` environment variable set below in the `Google Sheets` section.
 
   ```
   export MAILMAN_POSTGRESQL_USER=user
@@ -29,8 +29,7 @@ The easiest way to run Mailman is to install it from the Google Workspace Market
   export MAILMAN_POSTGRESQL_HOST=localhost
   export MAILMAN_POSTGRESQL_DATABASE=mydatabase
   export MAILMAN_POSTGRESQL_PORT=5432
-  export MAILMAN_ENCRYPTION_KEY=my-32-bit-hex-encoded-encryption-key
-  export MAILMAN_JWT_SECRET=secret
+  export MAILMAN_KEY=my-key
   ```
 
 * `cd backend/backend/cmd`
@@ -64,13 +63,13 @@ The easiest way to run Mailman is to install it from the Google Workspace Market
   ```
   function updateEnvVariables(){
     PropertiesService.getScriptProperties().setProperty('DOMAIN', 'https://api.example.com');
-    PropertiesService.getScriptProperties().setProperty('JWT_SECRET', 'secret');
+    PropertiesService.getScriptProperties().setProperty('KEY',"my-key");
   }
   ```
 
-  Update the `DOMAIN` and `JWT_SECRET`, select the `updateEnvVariables` in the functions dropdown list and hit the play button.
+  To update the `DOMAIN` and `KEY`, select the `updateEnvVariables` in the functions dropdown list and hit the play button.
 
-  **IMPORTANT**: The `JWT_SECRET` **MUST** be the same as the `JWT_SECRET` environment variable set above in the `Backend` section.
+  **IMPORTANT**: The `KEY` **MUST** be the same as the `KEY` environment variable set above in the `Backend` section.
 
   Once that's complete, you can delete the `env.gs` file
 
