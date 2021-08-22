@@ -3,15 +3,13 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/oxtoacart/bpool"
 )
 
 var (
-	bufpool   *bpool.BufferPool
-	templates map[string]*template.Template
+	bufpool *bpool.BufferPool
 )
 
 func init() {
@@ -28,8 +26,6 @@ func (fn AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			buf := bufpool.Get()
 			defer bufpool.Put(buf)
 
-			var d interface{}
-			d = rsp.Response
 			if rsp.Error != nil {
 				rsp.Response = ""
 				rsp.ErrorString = rsp.Error.Error()
@@ -43,7 +39,7 @@ func (fn AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			default:
-				d = fmt.Errorf("invalid template %q", rsp.template)
+				d := fmt.Errorf("invalid template %q", rsp.template)
 				if err := json.NewEncoder(buf).Encode(d); err != nil {
 					http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 					return
