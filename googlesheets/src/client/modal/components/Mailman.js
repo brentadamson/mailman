@@ -84,6 +84,7 @@ export default function Mailman(props) {
     }).catch(function(err){
       setAlertMessage('Unable to get Sheet. Please try again.');
       setAlertOpen(true);
+      console.log(err);
     }).then(serverFunctions.getTemplates().then(function(rsp){
       if(rsp.error){
         setAlertMessage(rsp.error);

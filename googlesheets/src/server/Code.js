@@ -50,6 +50,7 @@ export const getTemplates = () => {
   if (templates){
     return {'response': JSON.parse(templates)}
   }
+  return {'response':[]};
 }
 
 // saveTemplates saves a user's email templates
